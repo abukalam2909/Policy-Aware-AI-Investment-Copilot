@@ -14,6 +14,24 @@ def normalize(value):
     return value
 
 
+def _parse_revenue(raw: str) -> int:
+    if not raw:
+        return 0
+    cleaned = raw.replace("$", "").replace(",", "").replace(" ", "")
+    # strip currency codes like "cad", "usd"
+    for code in ("cad", "usd", "eur", "gbp"):
+        cleaned = cleaned.replace(code, "")
+    cleaned = cleaned.strip()
+    try:
+        if cleaned.endswith("m"):
+            return int(float(cleaned[:-1]) * 1_000_000)
+        if cleaned.endswith("k"):
+            return int(float(cleaned[:-1]) * 1_000)
+        return int(float(cleaned))
+    except (ValueError, TypeError):
+        return 0
+
+
 def matches_geography(country: str, allowed_geographies: list[str]) -> bool:
     normalized_country = normalize(country)
     region_map = {
@@ -63,12 +81,10 @@ def check_policy(policy: dict, startup: dict) -> dict:
         passed = False
 
     minimum_revenue_by_stage = policy.get("minimum_revenue_by_stage", {})
-    required_revenue = minimum_revenue_by_stage.get(startup.get("stage"), 0)
+    stage_key = startup.get("stage", "")
+    required_revenue = minimum_revenue_by_stage.get(stage_key, 0)
     revenue_raw = normalize(startup.get("current_revenue"))
-    try:
-        revenue_value = int(revenue_raw.replace("$", "").replace(",", ""))
-    except Exception:
-        revenue_value = 0
+    revenue_value = _parse_revenue(revenue_raw)
 
     if required_revenue and revenue_value < required_revenue:
         results.append({"check": "revenue", "status": "caution", "reason": f"Current revenue ${revenue_value} is below the required ${required_revenue} for stage {startup.get('stage')}.", "required": required_revenue, "current": revenue_value})

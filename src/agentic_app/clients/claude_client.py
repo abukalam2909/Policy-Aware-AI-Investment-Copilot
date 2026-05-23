@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 
-def call_claude(prompt: str, model: str = "claude-sonnet-4-5", max_tokens: int = 1000, timeout: int = 60) -> dict:
+def call_claude(prompt: str, model: str = "claude-sonnet-4-6", max_tokens: int = 1000, timeout: int = 60) -> dict:
     api_key = get_claude_api_key()
     if not api_key:
         raise RuntimeError("Claude API key not found. Set CLAUDE_API_KEY or create claude_config.json with the key.")
