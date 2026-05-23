@@ -16,6 +16,7 @@ from agentic_app.core.extractor import (
 )
 from agentic_app.core.market_intelligence import get_market_intelligence
 from agentic_app.core.policy_checker import check_policy
+from agentic_app.core.memo_generator import generate_investment_memo
 from agentic_app.core.question_generator import generate_diligence_questions
 from agentic_app.prompts.claude_prompts import load_json
 
@@ -39,6 +40,7 @@ def _init_state():
         "analyst_notes": "",
         "market_intel": None,
         "questions": None,
+        "memo": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -54,6 +56,7 @@ STEP_LABELS = [
     "Human Checkpoint",
     "Market Intelligence",
     "Diligence Questions",
+    "Investment Memo",
     "Deeper Analysis",
 ]
 
@@ -373,19 +376,94 @@ elif st.session_state.step == 5:
         st.markdown("")
 
     st.markdown("---")
+    col_back, col_next = st.columns(2)
+    with col_back:
+        if st.button("← Back to Market Intelligence"):
+            st.session_state.questions = None
+            st.session_state.step = 4
+            st.rerun()
+    with col_next:
+        if st.button("Generate Investment Memo →", type="primary", use_container_width=True):
+            st.session_state.step = 6
+            st.rerun()
+
+# ════════════════════════════════════════════════════════════════════════════════
+# STEP 6 — Investment Memo + Risk Analysis
+# ════════════════════════════════════════════════════════════════════════════════
+
+elif st.session_state.step == 6:
+    startup = st.session_state.startup
+    policy_result = st.session_state.policy_result
+    market_intel = st.session_state.market_intel
+    questions = st.session_state.questions
+    company = startup.get("company", "this startup")
+
+    st.markdown("## Step 6 — Investment Memo + Risk Analysis")
+
+    if st.session_state.memo is None:
+        with st.spinner("AI is generating the investment memo…"):
+            st.session_state.memo = generate_investment_memo(
+                startup, policy_result, market_intel, questions
+            )
+
+    memo = st.session_state.memo
+
+    # ── Thesis fit ────────────────────────────────────────────────────────────
+    st.markdown("### Investment Thesis Fit")
+    st.info(memo.get("thesis_fit", "—"))
+
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.markdown("### Strengths")
+        for strength in memo.get("strengths", []):
+            st.success(f"✓ {strength}")
+
+        st.markdown("### Missing Information")
+        for item in memo.get("missing_info", []):
+            st.warning(f"❓ {item}")
+
+    with col_right:
+        st.markdown("### Weaknesses & Red Flags")
+        for weakness in memo.get("weaknesses", []):
+            st.error(f"⚠ {weakness}")
+
+    # ── Risk analysis ─────────────────────────────────────────────────────────
+    st.markdown("### Risk Analysis")
+    risk_cols = st.columns(3)
+    level_color = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}
+    for i, risk in enumerate(memo.get("risk_analysis", [])):
+        with risk_cols[i % 3]:
+            level = risk.get("level", "Medium")
+            st.markdown(
+                f"{level_color.get(level, '🟡')} **{risk.get('area', '—')}** — `{level}`"
+            )
+            st.caption(risk.get("description", ""))
+
+    # ── Recommendation ────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### Recommendation")
+    rec = memo.get("recommendation", {})
+    action = rec.get("action", "HOLD")
+    reason = rec.get("reason", "")
+    action_style = {"PROCEED": st.success, "HOLD": st.warning, "PASS": st.error}
+    action_icon = {"PROCEED": "✅", "HOLD": "⏸️", "PASS": "❌"}
+    display = action_style.get(action, st.warning)
+    display(f"{action_icon.get(action, '⏸️')} **{action}** — {reason}")
+
+    st.markdown("---")
     st.markdown("## Next Steps")
     st.info(
         "🚧 **Coming in upcoming feature branches:**\n\n"
-        "- 📝 Investment Memo + Risk Analysis\n"
         "- 📄 HTML Report Generation\n"
         "- 📧 Gmail + Google Drive Delivery"
     )
 
     col_back, col_restart = st.columns(2)
     with col_back:
-        if st.button("← Back to Market Intelligence"):
-            st.session_state.questions = None
-            st.session_state.step = 4
+        if st.button("← Back to Questions"):
+            st.session_state.memo = None
+            st.session_state.step = 5
             st.rerun()
     with col_restart:
         if st.button("🔄 Start a New Analysis", use_container_width=True):
