@@ -87,7 +87,7 @@ def check_policy(policy: dict, startup: dict) -> dict:
     }
 
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python src/policy_checker.py <policy.json> <startup.json>")
         sys.exit(1)
@@ -100,7 +100,3 @@ def main():
     report = check_policy(policy, startup)
 
     print(json.dumps(report, indent=2))
-
-
-if __name__ == "__main__":
-    main()

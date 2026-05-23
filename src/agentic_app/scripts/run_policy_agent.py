@@ -1,10 +1,10 @@
-import os
 import sys
 import json
 from pathlib import Path
 
-from claude_prompts import build_policy_prompt, load_json
-from policy_checker import check_policy
+from agentic_app.prompts.claude_prompts import build_policy_prompt, load_json
+from agentic_app.core.policy_checker import check_policy
+from agentic_app.clients import claude_client
 
 
 def main():
@@ -12,25 +12,15 @@ def main():
         print("Usage: python src/run_policy_agent.py <policy.json> <startup.json>")
         sys.exit(1)
 
-    base = Path(__file__).resolve().parent
+    base = Path(__file__).resolve().parent.parent
     policy_path = Path(sys.argv[1])
     startup_path = Path(sys.argv[2])
 
     policy = load_json(policy_path)
     startup = load_json(startup_path)
-    template_path = base / "claude_policy_prompt.txt"
+    template_path = base / "prompts" / "claude_policy_prompt.txt"
 
     prompt = build_policy_prompt(policy, startup, template_path)
-
-    # Try to import the Claude client which can load the key from env or config
-    try:
-        import claude_client
-    except Exception as e:
-        print("Claude client not available:", e)
-        print("Using local policy checker fallback.")
-        report = check_policy(policy, startup)
-        print(json.dumps(report, indent=2))
-        return
 
     api_key = None
     try:
