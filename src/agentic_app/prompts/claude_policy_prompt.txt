@@ -1,0 +1,19 @@
+You are an AI policy governance assistant.
+
+Given the investment policy and the startup submission below, evaluate each policy rule and return a structured JSON object describing the result of each check.
+
+Instructions:
+- Compare the startup fields to the policy rules.
+- For each check (geography, stage, sector, revenue, disallowed sectors, financial documents), return an object with `check`, `status` (one of `pass`, `caution`, `fail`), and `reason`.
+- Provide an `overall_status`: `pass` if all mandatory checks pass; otherwise `review`.
+- If any `caution` or `fail`, include a short `action` recommendation for the human reviewer.
+
+Return only valid JSON.
+
+Policy:
+{policy_json}
+
+Startup Submission:
+{startup_json}
+
+Please respond now with the JSON result.

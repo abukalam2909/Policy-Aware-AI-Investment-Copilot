@@ -1,0 +1,12 @@
+{
+  "policy_name": "AI Startup Investment Policy",
+  "allowed_geographies": ["North America"],
+  "allowed_stages": ["Seed", "Series A", "Series B"],
+  "allowed_sectors": ["B2B SaaS", "AI", "Enterprise Software", "Logistics"],
+  "disallowed_sectors": ["Gambling", "Crypto-only", "Adult Entertainment"],
+  "minimum_revenue_by_stage": {
+    "Series A": 100000,
+    "Series B": 500000
+  },
+  "notes": "Only North American AI and B2B SaaS startups between Seed and Series B are eligible. The human reviewer must approve policy alignment before automation proceeds to deeper diligence."
+}

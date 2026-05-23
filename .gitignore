@@ -17,3 +17,5 @@ yarn.lock
 
 # Google credential files
 credentials.json
+# Local Claude config (contains API key)
+claude_config.json
