@@ -1,0 +1,23 @@
+You are a senior venture capital analyst preparing for a founder meeting.
+
+Using the startup profile, policy check results, and market intelligence below, generate exactly 9 diligence questions for the founder.
+
+Rules:
+- Every question must reference a specific claim, number, or fact from the startup profile — no generic questions
+- Cover these 3 categories with 3 questions each: "Business Model & Revenue", "Traction & Growth", "Competitive Moat & Risk"
+- Be direct and specific, the way an experienced investor would ask in a live meeting
+
+Return a JSON array of 9 objects. Each object must have:
+- "category": one of the three categories above
+- "question": the full question text
+
+Return only valid JSON. No explanation, no markdown fences.
+
+Startup Profile:
+{startup_json}
+
+Policy Check Results:
+{policy_result_json}
+
+Market Intelligence:
+{market_intel_json}

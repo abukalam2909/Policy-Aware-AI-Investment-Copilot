@@ -16,6 +16,7 @@ from agentic_app.core.extractor import (
 )
 from agentic_app.core.market_intelligence import get_market_intelligence
 from agentic_app.core.policy_checker import check_policy
+from agentic_app.core.question_generator import generate_diligence_questions
 from agentic_app.prompts.claude_prompts import load_json
 
 SAMPLES_DIR = Path(__file__).parent / "src" / "agentic_app" / "samples"
@@ -37,6 +38,7 @@ def _init_state():
         "human_decision": None,
         "analyst_notes": "",
         "market_intel": None,
+        "questions": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -51,6 +53,7 @@ STEP_LABELS = [
     "Policy Check",
     "Human Checkpoint",
     "Market Intelligence",
+    "Diligence Questions",
     "Deeper Analysis",
 ]
 
@@ -324,10 +327,55 @@ elif st.session_state.step == 4:
         st.markdown(intel.get("outlook", "—"))
 
     st.markdown("---")
+    col_back, col_next = st.columns(2)
+    with col_back:
+        if st.button("← Back to Checkpoint"):
+            st.session_state.market_intel = None
+            st.session_state.step = 3
+            st.rerun()
+    with col_next:
+        if st.button("Generate Diligence Questions →", type="primary", use_container_width=True):
+            st.session_state.step = 5
+            st.rerun()
+
+# ════════════════════════════════════════════════════════════════════════════════
+# STEP 5 — Diligence Questions
+# ════════════════════════════════════════════════════════════════════════════════
+
+elif st.session_state.step == 5:
+    startup = st.session_state.startup
+    policy_result = st.session_state.policy_result
+    market_intel = st.session_state.market_intel
+    company = startup.get("company", "this startup")
+
+    st.markdown("## Step 5 — Founder-Specific Diligence Questions")
+
+    if st.session_state.questions is None:
+        with st.spinner("AI is generating questions based on this startup's specific claims…"):
+            st.session_state.questions = generate_diligence_questions(
+                startup, policy_result, market_intel
+            )
+
+    questions = st.session_state.questions
+    st.markdown(f"*{len(questions)} questions generated for **{company}***")
+    st.markdown("---")
+
+    # Group by category
+    categories: dict[str, list[str]] = {}
+    for q in questions:
+        cat = q.get("category", "General")
+        categories.setdefault(cat, []).append(q["question"])
+
+    for category, qs in categories.items():
+        st.markdown(f"### {category}")
+        for i, question in enumerate(qs, start=1):
+            st.markdown(f"**Q{i}.** {question}")
+        st.markdown("")
+
+    st.markdown("---")
     st.markdown("## Next Steps")
     st.info(
         "🚧 **Coming in upcoming feature branches:**\n\n"
-        "- ❓ Founder-Specific Diligence Questions\n"
         "- 📝 Investment Memo + Risk Analysis\n"
         "- 📄 HTML Report Generation\n"
         "- 📧 Gmail + Google Drive Delivery"
@@ -335,9 +383,9 @@ elif st.session_state.step == 4:
 
     col_back, col_restart = st.columns(2)
     with col_back:
-        if st.button("← Back to Checkpoint"):
-            st.session_state.market_intel = None
-            st.session_state.step = 3
+        if st.button("← Back to Market Intelligence"):
+            st.session_state.questions = None
+            st.session_state.step = 4
             st.rerun()
     with col_restart:
         if st.button("🔄 Start a New Analysis", use_container_width=True):
