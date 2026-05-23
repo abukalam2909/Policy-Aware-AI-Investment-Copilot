@@ -18,6 +18,7 @@ from agentic_app.core.market_intelligence import get_market_intelligence
 from agentic_app.core.policy_checker import check_policy
 from agentic_app.core.memo_generator import generate_investment_memo
 from agentic_app.core.question_generator import generate_diligence_questions
+from agentic_app.core.report_generator import generate_html_report
 from agentic_app.prompts.claude_prompts import load_json
 
 SAMPLES_DIR = Path(__file__).parent / "src" / "agentic_app" / "samples"
@@ -41,6 +42,7 @@ def _init_state():
         "market_intel": None,
         "questions": None,
         "memo": None,
+        "report_html": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -57,7 +59,7 @@ STEP_LABELS = [
     "Market Intelligence",
     "Diligence Questions",
     "Investment Memo",
-    "Deeper Analysis",
+    "HTML Report",
 ]
 
 with st.sidebar:
@@ -452,18 +454,67 @@ elif st.session_state.step == 6:
     display(f"{action_icon.get(action, '⏸️')} **{action}** — {reason}")
 
     st.markdown("---")
-    st.markdown("## Next Steps")
-    st.info(
-        "🚧 **Coming in upcoming feature branches:**\n\n"
-        "- 📄 HTML Report Generation\n"
-        "- 📧 Gmail + Google Drive Delivery"
-    )
-
-    col_back, col_restart = st.columns(2)
+    col_back, col_next = st.columns(2)
     with col_back:
         if st.button("← Back to Questions"):
             st.session_state.memo = None
             st.session_state.step = 5
+            st.rerun()
+    with col_next:
+        if st.button("Generate HTML Report →", type="primary", use_container_width=True):
+            st.session_state.step = 7
+            st.rerun()
+
+# ════════════════════════════════════════════════════════════════════════════════
+# STEP 7 — HTML Report
+# ════════════════════════════════════════════════════════════════════════════════
+
+elif st.session_state.step == 7:
+    startup = st.session_state.startup
+    company = startup.get("company", "startup").replace(" ", "_")
+
+    st.markdown("## Step 7 — Diligence Report")
+
+    if st.session_state.report_html is None:
+        with st.spinner("Generating polished HTML report…"):
+            st.session_state.report_html = generate_html_report(
+                startup=st.session_state.startup,
+                policy_result=st.session_state.policy_result,
+                market_intel=st.session_state.market_intel,
+                questions=st.session_state.questions,
+                memo=st.session_state.memo,
+                analyst_notes=st.session_state.analyst_notes,
+            )
+
+    report_html = st.session_state.report_html
+    st.success("✅ Report ready.")
+
+    st.download_button(
+        label="📥 Download HTML Report",
+        data=report_html,
+        file_name=f"{company}_diligence_report.html",
+        mime="text/html",
+        use_container_width=True,
+        type="primary",
+    )
+
+    st.markdown("---")
+    st.markdown("### Report Preview")
+    st.components.v1.html(report_html, height=700, scrolling=True)
+
+    st.markdown("---")
+    st.markdown("## Next Steps")
+    st.info(
+        "🚧 **Coming in the next feature branch:**\n\n"
+        "- 📧 Gmail notification with report link\n"
+        "- ☁️ Google Drive upload"
+    )
+
+    col_back, col_restart = st.columns(2)
+    with col_back:
+        if st.button("← Back to Memo"):
+            st.session_state.report_html = None
+            st.session_state.step = 6
             st.rerun()
     with col_restart:
         if st.button("🔄 Start a New Analysis", use_container_width=True):
