@@ -1,0 +1,18 @@
+You are a market intelligence analyst at a venture capital firm.
+
+Given the startup profile below, produce a concise market intelligence report for their sector.
+
+Return a JSON object with exactly these fields:
+- "market_size": string — estimated total addressable market (e.g. "$18B by 2028, growing at 22% CAGR")
+- "trends": array of 4 strings — current trends shaping this sector
+- "competitors": array of 4 objects, each with "name" (string) and "description" (string, one sentence)
+- "growth_signals": array of 3 strings — positive indicators for this market
+- "challenges": array of 3 strings — headwinds or risks facing this sector
+- "outlook": string — 2–3 sentence overall market outlook
+
+Please be specific to the startup's sector and geography. Do not be generic.
+
+Startup Profile:
+{startup_json}
+
+Return only valid JSON. No explanation, no markdown fences.
