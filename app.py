@@ -14,6 +14,7 @@ from agentic_app.core.extractor import (
     heuristic_parse_submission,
     parse_model_json,
 )
+from agentic_app.core.market_intelligence import get_market_intelligence
 from agentic_app.core.policy_checker import check_policy
 from agentic_app.prompts.claude_prompts import load_json
 
@@ -35,6 +36,7 @@ def _init_state():
         "policy_result": None,
         "human_decision": None,
         "analyst_notes": "",
+        "market_intel": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -48,6 +50,7 @@ STEP_LABELS = [
     "Upload & Extract",
     "Policy Check",
     "Human Checkpoint",
+    "Market Intelligence",
     "Deeper Analysis",
 ]
 
@@ -265,7 +268,7 @@ elif st.session_state.step == 3:
             if st.button("❌ REJECT", use_container_width=True):
                 st.session_state.human_decision = "rejected"
                 st.session_state.analyst_notes = notes
-                st.session_state.step = 5
+                st.session_state.step = 99
                 st.rerun()
 
     st.markdown("---")
@@ -274,7 +277,7 @@ elif st.session_state.step == 3:
         st.rerun()
 
 # ════════════════════════════════════════════════════════════════════════════════
-# STEP 4 — Approved (deeper analysis placeholder — built in next branches)
+# STEP 4 — Market Intelligence
 # ════════════════════════════════════════════════════════════════════════════════
 
 elif st.session_state.step == 4:
@@ -282,31 +285,71 @@ elif st.session_state.step == 4:
     company = startup.get("company", "this startup")
 
     st.success(f"✅ **{company}** approved for deeper diligence.")
-
     if st.session_state.analyst_notes:
         st.info(f"**Analyst notes:** {st.session_state.analyst_notes}")
 
     st.markdown("---")
-    st.markdown("## Next: Deeper Analysis")
+    st.markdown("## Step 4 — Market Intelligence")
+
+    if st.session_state.market_intel is None:
+        with st.spinner("AI is researching the market…"):
+            st.session_state.market_intel = get_market_intelligence(startup)
+
+    intel = st.session_state.market_intel
+
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.markdown("### Market Size")
+        st.info(intel.get("market_size", "—"))
+
+        st.markdown("### Market Trends")
+        for trend in intel.get("trends", []):
+            st.markdown(f"- {trend}")
+
+        st.markdown("### Growth Signals")
+        for signal in intel.get("growth_signals", []):
+            st.markdown(f"📈 {signal}")
+
+    with col_right:
+        st.markdown("### Key Competitors")
+        for comp in intel.get("competitors", []):
+            st.markdown(f"**{comp.get('name', '—')}** — {comp.get('description', '')}")
+
+        st.markdown("### Sector Challenges")
+        for challenge in intel.get("challenges", []):
+            st.markdown(f"⚠️ {challenge}")
+
+        st.markdown("### Market Outlook")
+        st.markdown(intel.get("outlook", "—"))
+
+    st.markdown("---")
+    st.markdown("## Next Steps")
     st.info(
         "🚧 **Coming in upcoming feature branches:**\n\n"
-        "- 🔍 Market Intelligence Agent\n"
         "- ❓ Founder-Specific Diligence Questions\n"
         "- 📝 Investment Memo + Risk Analysis\n"
         "- 📄 HTML Report Generation\n"
         "- 📧 Gmail + Google Drive Delivery"
     )
 
-    if st.button("🔄 Start a New Analysis", use_container_width=True):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.rerun()
+    col_back, col_restart = st.columns(2)
+    with col_back:
+        if st.button("← Back to Checkpoint"):
+            st.session_state.market_intel = None
+            st.session_state.step = 3
+            st.rerun()
+    with col_restart:
+        if st.button("🔄 Start a New Analysis", use_container_width=True):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
 
 # ════════════════════════════════════════════════════════════════════════════════
-# STEP 5 — Rejected
+# STEP 99 — Rejected (always last; never conflicts with new workflow steps)
 # ════════════════════════════════════════════════════════════════════════════════
 
-elif st.session_state.step == 5:
+elif st.session_state.step == 99:
     startup = st.session_state.startup
     company = startup.get("company", "this startup")
 
