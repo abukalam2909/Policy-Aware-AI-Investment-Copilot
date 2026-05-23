@@ -1,0 +1,32 @@
+{
+  "startup": "GreenFleet AI",
+  "policy": "AI Startup Investment Policy",
+  "overall_status": "pass",
+  "results": [
+    {
+      "check": "geography",
+      "status": "pass",
+      "reason": "Country 'Canada' is allowed."
+    },
+    {
+      "check": "stage",
+      "status": "pass",
+      "reason": "Stage 'Seed' is allowed."
+    },
+    {
+      "check": "sector",
+      "status": "pass",
+      "reason": "Sector 'Logistics AI' aligns with allowed sectors."
+    },
+    {
+      "check": "revenue",
+      "status": "pass",
+      "reason": "Current revenue $0 meets stage requirement."
+    },
+    {
+      "check": "financial_documents",
+      "status": "caution",
+      "reason": "Financial documentation is not provided; human reviewer should verify financial claims before deeper diligence."
+    }
+  ]
+}
