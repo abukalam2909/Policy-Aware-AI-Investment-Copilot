@@ -21,3 +21,13 @@ If you prefer the raw package path, use:
 ```bash
 PYTHONPATH=src python3 -m agentic_app.scripts.run_policy_agent src/agentic_app/samples/sample_policy.json src/agentic_app/samples/sample_startup.json
 ```
+
+## Extraction agent
+
+Extract structured startup JSON from a pitch deck PDF:
+
+```bash
+python3 run_extraction_agent.py src/agentic_app/samples/sample_pitch_deck.pdf
+```
+
+This writes the extracted JSON to `src/agentic_app/samples/sample_pitch_deck.startup.json` by default. If you have a Claude API key configured, it will use Claude to improve extraction quality and otherwise fall back to a local heuristic parser.

@@ -1,0 +1,24 @@
+You are an AI extraction assistant.
+
+Extract structured startup submission data from the pitch deck text below.
+
+Return only valid JSON with these keys:
+- company
+- sector
+- stage
+- country
+- funding_ask
+- business_model
+- claimed_traction
+- revenue_model
+- current_revenue
+- financial_docs_provided
+
+If a field is not explicitly present, use a reasonable default:
+- company: "Unknown Startup"
+- stage: "Seed"
+- current_revenue: "0"
+- financial_docs_provided: false
+
+Pitch deck text:
+{pitch_text}
