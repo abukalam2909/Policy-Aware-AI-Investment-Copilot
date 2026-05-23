@@ -18,6 +18,7 @@ from agentic_app.core.market_intelligence import get_market_intelligence
 from agentic_app.core.policy_checker import check_policy
 from agentic_app.core.memo_generator import generate_investment_memo
 from agentic_app.core.question_generator import generate_diligence_questions
+from agentic_app.clients.gmail_client import send_diligence_email
 from agentic_app.core.report_generator import generate_html_report
 from agentic_app.prompts.claude_prompts import load_json
 
@@ -43,6 +44,7 @@ def _init_state():
         "questions": None,
         "memo": None,
         "report_html": None,
+        "drive_link": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -487,33 +489,62 @@ elif st.session_state.step == 7:
             )
 
     report_html = st.session_state.report_html
+    startup_name = st.session_state.startup.get("company", "startup")
+    safe_name = startup_name.replace(" ", "_")
     st.success("✅ Report ready.")
 
+    # ── Download ──────────────────────────────────────────────────────────────
     st.download_button(
         label="📥 Download HTML Report",
         data=report_html,
-        file_name=f"{company}_diligence_report.html",
+        file_name=f"{safe_name}_diligence_report.html",
         mime="text/html",
         use_container_width=True,
         type="primary",
     )
 
     st.markdown("---")
+
+    # ── Delivery: Drive + Gmail ───────────────────────────────────────────────
+    col_drive, col_email = st.columns(2)
+
+    with col_drive:
+        st.markdown("### ☁️ Google Drive")
+        st.info(
+            "Download the report above, then drag it into your "
+            "[Sagard Diligence Reports](https://drive.google.com/drive/folders/1KKpy_H5Gb-j1vrzYMSEj2noZNcZy7bpM) "
+            "folder on Google Drive."
+        )
+
+    with col_email:
+        st.markdown("### 📧 Gmail Notification")
+        to_email = st.text_input("Recipient email", placeholder="analyst@sagard.com")
+        if st.button("Send via Gmail", use_container_width=True):
+            if not to_email:
+                st.warning("Enter a recipient email address.")
+            else:
+                with st.spinner("Sending…"):
+                    try:
+                        send_diligence_email(
+                            to_email=to_email,
+                            company=startup_name,
+                            report_html=report_html,
+                            drive_link=st.session_state.drive_link or "",
+                        )
+                        st.success(f"✅ Email sent to {to_email}")
+                    except Exception as exc:
+                        st.error(f"Email failed: {exc}")
+
+    st.markdown("---")
     st.markdown("### Report Preview")
     st.components.v1.html(report_html, height=700, scrolling=True)
 
     st.markdown("---")
-    st.markdown("## Next Steps")
-    st.info(
-        "🚧 **Coming in the next feature branch:**\n\n"
-        "- 📧 Gmail notification with report link\n"
-        "- ☁️ Google Drive upload"
-    )
-
     col_back, col_restart = st.columns(2)
     with col_back:
         if st.button("← Back to Memo"):
             st.session_state.report_html = None
+            st.session_state.drive_link = None
             st.session_state.step = 6
             st.rerun()
     with col_restart:

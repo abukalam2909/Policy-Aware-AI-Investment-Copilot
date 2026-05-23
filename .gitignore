@@ -15,7 +15,9 @@ yarn.lock
 # N8N
 .n8n/
 
-# Google credential files
+# Google credential files — never commit service account or OAuth keys
 credentials.json
+*-[0-9a-f]*.json
+delivery_config.json
 # Local Claude config (contains API key)
 claude_config.json
