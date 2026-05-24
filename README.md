@@ -1,5 +1,10 @@
-# Policy-Aware-AI-Investment-Copilot
-An AI-powered workflow automation system that helps investment analysts process startup pitch decks faster while enforcing internal investment governance policies.
+# Policy-Aware AI Investment Diligence Copilot
+
+## Demo
+[▶ Watch the demo on YouTube](https://www.youtube.com/watch?v=bYpU06Ygixs)
+
+## Overview
+An automated deal flow pipeline that screens incoming startup pitch decks against investment policy, generates a full diligence report — market research, risk analysis, investment memo — and delivers ranked opportunities to analysts. The analyst steps in only to make the governance call. As deal volume scales, the pipeline scales with it.
 
 ## Project layout
 - `src/agentic_app/`: application package
