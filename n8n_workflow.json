@@ -1,0 +1,198 @@
+{
+  "name": "Policy-Aware AI Investment Diligence Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "diligence/submit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-trigger",
+      "name": "1. Pitch Deck Submitted",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "diligence-submit"
+    },
+    {
+      "parameters": {
+        "command": "=cd /path/to/Policy-Aware-AI-Investment-Copilot && python3 run_full_pipeline.py \"{{ $json.body.pdf_path }}\" src/agentic_app/samples/sample_policy.json /tmp"
+      },
+      "id": "node-run-pipeline",
+      "name": "2. Run Extraction + Policy Check",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stdout = $input.first().json.stdout || '';\nconst lines = stdout.split('\\n');\n\n// Find the JSON output from the pipeline\nlet policyResult = null;\nfor (const line of lines) {\n  try {\n    const parsed = JSON.parse(line);\n    if (parsed.overall_status) {\n      policyResult = parsed;\n      break;\n    }\n  } catch (e) {}\n}\n\n// Fall back to reading the output file\nif (!policyResult) {\n  const fs = require('fs');\n  const files = fs.readdirSync('/tmp');\n  const resultFile = files.find(f => f.endsWith('.policy_result.json'));\n  if (resultFile) {\n    policyResult = JSON.parse(fs.readFileSync('/tmp/' + resultFile, 'utf8'));\n  }\n}\n\nreturn [{ json: { policy_result: policyResult, pdf_path: $('1. Pitch Deck Submitted').first().json.body.pdf_path, analyst_email: $('1. Pitch Deck Submitted').first().json.body.analyst_email } }];"
+      },
+      "id": "node-parse-result",
+      "name": "3. Parse Policy Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.policy_result.overall_status }}",
+              "operation": "equals",
+              "value2": "pass"
+            }
+          ]
+        }
+      },
+      "id": "node-policy-gate",
+      "name": "4. Policy Gate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "id": "node-human-checkpoint",
+      "name": "5. Human Approval Checkpoint",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1200, 200],
+      "webhookId": "diligence-approve"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node checks whether the analyst approved or rejected\nconst decision = $input.first().json.body?.decision || 'approved';\nconst notes = $input.first().json.body?.notes || '';\n\nif (decision !== 'approved') {\n  throw new Error('Analyst rejected this opportunity. Workflow stopped.');\n}\n\nreturn [{ json: { ...$('3. Parse Policy Result').first().json, decision, analyst_notes: notes } }];"
+      },
+      "id": "node-check-decision",
+      "name": "6. Check Analyst Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 200]
+    },
+    {
+      "parameters": {
+        "command": "=cd /path/to/Policy-Aware-AI-Investment-Copilot && PYTHONPATH=src python3 -c \"\nimport json, sys\nsys.path.insert(0, 'src')\nfrom pathlib import Path\nfrom agentic_app.core.market_intelligence import get_market_intelligence\nfrom agentic_app.core.question_generator import generate_diligence_questions\nfrom agentic_app.core.memo_generator import generate_investment_memo\nfrom agentic_app.core.report_generator import generate_html_report\n\nstartup = json.loads(open('/tmp/{{ $json.policy_result.startup.replace(\\\" \\\", \\\"_\\\").lower() }}.startup.json').read())\npolicy_result = {{ $json.policy_result | json }}\n\nintel = get_market_intelligence(startup)\nquestions = generate_diligence_questions(startup, policy_result, intel)\nmemo = generate_investment_memo(startup, policy_result, intel, questions)\nreport_html = generate_html_report(startup, policy_result, intel, questions, memo, '{{ $json.analyst_notes }}')\n\nreport_path = '/tmp/{{ $json.policy_result.startup.replace(\\\" \\\", \\\"_\\\").lower() }}_report.html'\nopen(report_path, 'w').write(report_html)\nprint(report_path)\n\""
+      },
+      "id": "node-deep-analysis",
+      "name": "7. Run Deep Analysis + Generate Report",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1680, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "abukalamportfolio@gmail.com",
+        "toEmail": "={{ $('3. Parse Policy Result').first().json.analyst_email }}",
+        "subject": "=Investment Diligence Report Ready — {{ $('3. Parse Policy Result').first().json.policy_result.startup }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:sans-serif;max-width:600px;\">\n  <h2>📊 Diligence Report Ready</h2>\n  <p>Your AI-generated investment diligence report for <strong>{{ $('3. Parse Policy Result').first().json.policy_result.startup }}</strong> is complete.</p>\n  <p><strong>Policy Status:</strong> {{ $('3. Parse Policy Result').first().json.policy_result.overall_status.toUpperCase() }}</p>\n  <p>The full HTML report has been generated and saved. Please find it attached or in your Google Drive folder.</p>\n  <hr/>\n  <p style=\"font-size:0.8rem;color:#888;\">Generated by Policy-Aware AI Investment Diligence Copilot</p>\n</div>",
+        "options": {}
+      },
+      "id": "node-send-email",
+      "name": "8. Send Gmail Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1920, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"complete\", \"startup\": \"{{ $('3. Parse Policy Result').first().json.policy_result.startup }}\", \"recommendation\": \"Report delivered to analyst.\" }"
+      },
+      "id": "node-respond-success",
+      "name": "9. Respond: Complete",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2160, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "abukalamportfolio@gmail.com",
+        "toEmail": "={{ $('3. Parse Policy Result').first().json.analyst_email }}",
+        "subject": "=Policy Review Required — {{ $('3. Parse Policy Result').first().json.policy_result.startup }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:sans-serif;max-width:600px;\">\n  <h2>⚠️ Policy Review Required</h2>\n  <p>The AI policy check for <strong>{{ $json.policy_result.startup }}</strong> requires your review before deeper diligence can proceed.</p>\n  <h3>Policy Checks:</h3>\n  <ul>\n    {{#each $json.policy_result.results}}\n    <li><strong>{{ this.check }}</strong>: {{ this.status }} — {{ this.reason }}</li>\n    {{/each}}\n  </ul>\n  <p>To approve, call the resume webhook:<br/>\n  <code>POST /webhook/diligence-approve<br/>{\"decision\": \"approved\", \"notes\": \"your notes\"}</code></p>\n  <p>To reject:<br/>\n  <code>POST /webhook/diligence-approve<br/>{\"decision\": \"rejected\"}</code></p>\n</div>",
+        "options": {}
+      },
+      "id": "node-notify-review",
+      "name": "Notify: Review Required",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1200, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"awaiting_approval\", \"startup\": \"{{ $json.policy_result.startup }}\", \"message\": \"Policy flagged items. Analyst notified for review.\" }"
+      },
+      "id": "node-respond-review",
+      "name": "Respond: Awaiting Approval",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1440, 420]
+    }
+  ],
+  "connections": {
+    "1. Pitch Deck Submitted": {
+      "main": [
+        [{ "node": "2. Run Extraction + Policy Check", "type": "main", "index": 0 }]
+      ]
+    },
+    "2. Run Extraction + Policy Check": {
+      "main": [
+        [{ "node": "3. Parse Policy Result", "type": "main", "index": 0 }]
+      ]
+    },
+    "3. Parse Policy Result": {
+      "main": [
+        [{ "node": "4. Policy Gate", "type": "main", "index": 0 }]
+      ]
+    },
+    "4. Policy Gate": {
+      "main": [
+        [{ "node": "5. Human Approval Checkpoint", "type": "main", "index": 0 }],
+        [
+          { "node": "Notify: Review Required", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "5. Human Approval Checkpoint": {
+      "main": [
+        [{ "node": "6. Check Analyst Decision", "type": "main", "index": 0 }]
+      ]
+    },
+    "6. Check Analyst Decision": {
+      "main": [
+        [{ "node": "7. Run Deep Analysis + Generate Report", "type": "main", "index": 0 }]
+      ]
+    },
+    "7. Run Deep Analysis + Generate Report": {
+      "main": [
+        [{ "node": "8. Send Gmail Notification", "type": "main", "index": 0 }]
+      ]
+    },
+    "8. Send Gmail Notification": {
+      "main": [
+        [{ "node": "9. Respond: Complete", "type": "main", "index": 0 }]
+      ]
+    },
+    "Notify: Review Required": {
+      "main": [
+        [{ "node": "Respond: Awaiting Approval", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
