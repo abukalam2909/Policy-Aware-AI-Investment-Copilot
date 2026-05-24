@@ -27,7 +27,6 @@ PROMPTS_DIR = Path(__file__).parent / "src" / "agentic_app" / "prompts"
 
 st.set_page_config(
     page_title="AI Investment Diligence Copilot",
-    page_icon="📊",
     layout="wide",
 )
 
@@ -65,18 +64,18 @@ STEP_LABELS = [
 ]
 
 with st.sidebar:
-    st.markdown("## 📊 Diligence Copilot")
+    st.markdown("## Diligence Copilot")
     st.markdown("---")
     st.markdown("### Workflow Progress")
 
     for i, label in enumerate(STEP_LABELS, start=1):
         current = st.session_state.step
         if i < current:
-            st.markdown(f"✅ Step {i}: {label}")
+            st.markdown(f"✅ {label}")
         elif i == current:
-            st.markdown(f"🔵 **Step {i}: {label}**")
+            st.markdown(f"🔵 **{label}**")
         else:
-            st.markdown(f"⬜ Step {i}: {label}")
+            st.markdown(f"⬜ {label}")
 
     st.markdown("---")
 
@@ -95,7 +94,7 @@ with st.sidebar:
 
 # ── Page header ───────────────────────────────────────────────────────────────
 
-st.markdown("# 📊 Policy-Aware AI Investment Diligence Copilot")
+st.markdown("# Policy-Aware AI Investment Diligence Copilot")
 st.markdown(
     "*Automating first-pass startup diligence while enforcing investment governance policies*"
 )
@@ -106,21 +105,12 @@ st.markdown("---")
 # ════════════════════════════════════════════════════════════════════════════════
 
 if st.session_state.step == 1:
-    st.markdown("## Step 1 — Upload Pitch Deck")
+    st.markdown("## Upload Pitch Deck")
 
     col_left, col_right = st.columns([3, 2])
 
     with col_left:
         uploaded = st.file_uploader("Upload a pitch deck PDF", type=["pdf"])
-
-        st.markdown("**— or use the built-in sample —**")
-        if st.button("Load GreenFleet AI sample", use_container_width=True):
-            sample_file = SAMPLES_DIR / "greenfleet_ai.startup.json"
-            if not sample_file.exists():
-                sample_file = SAMPLES_DIR / "sample_startup.json"
-            st.session_state.startup = json.loads(sample_file.read_text(encoding="utf-8"))
-            st.session_state.step = 2
-            st.rerun()
 
         if uploaded:
             st.success(f"Uploaded: **{uploaded.name}**")
@@ -149,15 +139,6 @@ if st.session_state.step == 1:
                     finally:
                         tmp_path.unlink(missing_ok=True)
 
-    with col_right:
-        st.markdown("### What this system does")
-        st.markdown("""
-1. 🤖 AI reads the pitch deck PDF
-2. 📋 Extracts structured startup fields
-3. 🔍 Checks against investment governance policy
-4. 🧑 **You decide** whether to proceed
-5. 📊 Deep analysis, questions & report *(coming soon)*
-        """)
 
 # ════════════════════════════════════════════════════════════════════════════════
 # STEP 2 — Policy Check
@@ -165,7 +146,7 @@ if st.session_state.step == 1:
 
 elif st.session_state.step == 2:
     startup = st.session_state.startup
-    st.markdown("## Step 2 — Extraction Results & Policy Check")
+    st.markdown("## Extraction Results & Policy Check")
 
     policy = load_json(SAMPLES_DIR / "sample_policy.json")
     policy_result = check_policy(policy, startup)
@@ -176,14 +157,14 @@ elif st.session_state.step == 2:
     with col_left:
         st.markdown("### Extracted Startup Profile")
         fields = {
-            "🏢 Company": "company",
-            "🌍 Country": "country",
-            "📈 Stage": "stage",
-            "🏭 Sector": "sector",
-            "💰 Funding Ask": "funding_ask",
-            "💼 Business Model": "business_model",
-            "📊 Current Revenue": "current_revenue",
-            "🎯 Claimed Traction": "claimed_traction",
+            "Company": "company",
+            "Country": "country",
+            "Stage": "stage",
+            "Sector": "sector",
+            "Funding Ask": "funding_ask",
+            "Business Model": "business_model",
+            "Current Revenue": "current_revenue",
+            "Claimed Traction": "claimed_traction",
         }
         for label, key in fields.items():
             st.markdown(f"**{label}:** {startup.get(key, '—')}")
@@ -226,7 +207,7 @@ elif st.session_state.step == 3:
     company = startup.get("company", "this startup")
     overall = policy_result["overall_status"]
 
-    st.markdown("## Step 3 — Policy Governance Checkpoint")
+    st.markdown("## Policy Governance Checkpoint")
 
     if overall == "pass":
         st.success(f"Policy check passed for **{company}**. Your approval is required to proceed.")
@@ -234,24 +215,6 @@ elif st.session_state.step == 3:
         st.warning(f"Policy check flagged items for **{company}**. Review carefully before deciding.")
 
     st.markdown("---")
-
-    st.markdown(
-        """
-        <div style="border:2px solid #f0a500;background:#fffbea;border-radius:8px;padding:1.5rem;margin:1rem 0;">
-        <h3 style="margin:0 0 0.5rem 0;">🧑 Human Decision Required</h3>
-        <p>
-        The AI has completed its first-pass policy evaluation.
-        Before it continues with market research, diligence questions, and the investment memo,
-        <strong>you must approve or reject this opportunity.</strong>
-        </p>
-        <p style="margin-bottom:0;">
-        <em>This checkpoint exists because policy compliance is a fiduciary obligation —
-        the AI cannot make this governance decision autonomously.</em>
-        </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
     col_summary, col_decision = st.columns(2)
 
@@ -299,7 +262,7 @@ elif st.session_state.step == 4:
         st.info(f"**Analyst notes:** {st.session_state.analyst_notes}")
 
     st.markdown("---")
-    st.markdown("## Step 4 — Market Intelligence")
+    st.markdown("## Market Intelligence")
 
     if st.session_state.market_intel is None:
         with st.spinner("AI is researching the market…"):
@@ -355,7 +318,7 @@ elif st.session_state.step == 5:
     market_intel = st.session_state.market_intel
     company = startup.get("company", "this startup")
 
-    st.markdown("## Step 5 — Founder-Specific Diligence Questions")
+    st.markdown("## Founder-Specific Diligence Questions")
 
     if st.session_state.questions is None:
         with st.spinner("AI is generating questions based on this startup's specific claims…"):
@@ -402,7 +365,7 @@ elif st.session_state.step == 6:
     questions = st.session_state.questions
     company = startup.get("company", "this startup")
 
-    st.markdown("## Step 6 — Investment Memo + Risk Analysis")
+    st.markdown("## Investment Memo & Risk Analysis")
 
     if st.session_state.memo is None:
         with st.spinner("AI is generating the investment memo…"):
@@ -475,7 +438,7 @@ elif st.session_state.step == 7:
     startup = st.session_state.startup
     company = startup.get("company", "startup").replace(" ", "_")
 
-    st.markdown("## Step 7 — Diligence Report")
+    st.markdown("## Diligence Report")
 
     if st.session_state.report_html is None:
         with st.spinner("Generating polished HTML report…"):
@@ -506,20 +469,9 @@ elif st.session_state.step == 7:
     st.markdown("---")
 
     # ── Delivery: Drive + Gmail ───────────────────────────────────────────────
-    col_drive, col_email = st.columns(2)
-
-    with col_drive:
-        st.markdown("### ☁️ Google Drive")
-        st.info(
-            "Download the report above, then drag it into your "
-            "[Sagard Diligence Reports](https://drive.google.com/drive/folders/1KKpy_H5Gb-j1vrzYMSEj2noZNcZy7bpM) "
-            "folder on Google Drive."
-        )
-
-    with col_email:
-        st.markdown("### 📧 Gmail Notification")
-        to_email = st.text_input("Recipient email", placeholder="analyst@sagard.com")
-        if st.button("Send via Gmail", use_container_width=True):
+    st.markdown("### 📧 Gmail Notification")
+    to_email = st.text_input("Recipient email", placeholder="analyst@sagard.com")
+    if st.button("Send via Gmail", use_container_width=True):
             if not to_email:
                 st.warning("Enter a recipient email address.")
             else:
