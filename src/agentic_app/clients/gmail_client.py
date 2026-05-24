@@ -60,7 +60,7 @@ def send_diligence_email(
                 max-width:600px;margin:0 auto;color:#1a1a2e;">
       <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);
                   color:white;padding:2rem;border-radius:8px 8px 0 0;">
-        <h1 style="margin:0;font-size:1.2rem;">📊 AI Investment Diligence Copilot</h1>
+        <h1 style="margin:0;font-size:1.2rem;">AI Investment Diligence Copilot</h1>
       </div>
       <div style="background:#f8f9fc;padding:2rem;border-radius:0 0 8px 8px;
                   border:1px solid #e0e0e0;">

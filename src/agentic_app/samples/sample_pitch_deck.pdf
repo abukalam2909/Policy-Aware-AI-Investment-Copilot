@@ -6,45 +6,243 @@ endobj
 << /Type /Pages /Kids [3 0 R] /Count 1 >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+<< /Type /Page /Parent 2 0 R
+   /MediaBox [0 0 612 792]
+   /Contents 4 0 R
+   /Resources << /Font << /F1 5 0 R >> >> >>
 endobj
 4 0 obj
-<< /Length 378 >>
+<< /Length 3740 >>
 stream
 BT
-/F1 18 Tf
-72 720 Td
+/F1 11 Tf
+0 0 0 rg
+/F1 11 Tf
+50 750 Td
+(GreenFleet AI ? Series Seed Pitch Deck) Tj
+0 0 0 rg
+/F1 11 Tf
+50 736 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 722 Td
 (Company: GreenFleet AI) Tj
-72 700 Td
+0 0 0 rg
+/F1 11 Tf
+50 708 Td
 (Sector: Logistics AI) Tj
-72 680 Td
+0 0 0 rg
+/F1 11 Tf
+50 694 Td
 (Stage: Seed) Tj
-72 660 Td
+0 0 0 rg
+/F1 11 Tf
+50 680 Td
 (Country: Canada) Tj
-72 640 Td
-(Funding ask: $2M) Tj
-72 620 Td
-(Business model: B2B SaaS for fleet route optimization) Tj
-72 600 Td
-(Claimed traction: Pilot with 3 regional fleet operators, claims 30% fuel savings) Tj
-72 580 Td
-(Revenue model: Subscription + usage fees) Tj
+0 0 0 rg
+/F1 11 Tf
+50 666 Td
+(Funding Ask: $2M \(USD\)) Tj
+0 0 0 rg
+/F1 11 Tf
+50 652 Td
+(Financial Documents Provided: No \(available under NDA upon request\)) Tj
+0 0 0 rg
+/F1 11 Tf
+50 638 Td
+(Revenue Model: B2B SaaS ? Subscription plus usage fees) Tj
+0 0 0 rg
+/F1 11 Tf
+50 624 Td
+(Current Revenue: $0 \(pre-revenue, active pilots\)) Tj
+0 0 0 rg
+/F1 11 Tf
+50 610 Td
+(Claimed Traction: Pilot with 3 regional fleet operators; 30% fuel savings demonstrated) Tj
+0 0 0 rg
+/F1 11 Tf
+50 596 Td
+( ) Tj
+0.2 0.2 0.5 rg
+50 582 Td
+/F1 12 Tf
+50 582 Td
+(--- EXECUTIVE SUMMARY ---) Tj
+0 0 0 rg
+/F1 11 Tf
+50 568 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 554 Td
+(GreenFleet AI is a Canadian B2B SaaS company that uses artificial intelligence) Tj
+0 0 0 rg
+/F1 11 Tf
+50 540 Td
+(to optimize fleet route planning and reduce fuel consumption for commercial) Tj
+0 0 0 rg
+/F1 11 Tf
+50 526 Td
+(logistics operators across North America.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 512 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 498 Td
+(We are raising a $2,000,000 Seed round to expand our engineering team, scale) Tj
+0 0 0 rg
+/F1 11 Tf
+50 484 Td
+(our go-to-market motion, and deepen integrations with major fleet management) Tj
+0 0 0 rg
+/F1 11 Tf
+50 470 Td
+(platforms.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 456 Td
+( ) Tj
+0.2 0.2 0.5 rg
+50 442 Td
+/F1 12 Tf
+50 442 Td
+(--- PROBLEM ---) Tj
+0 0 0 rg
+/F1 11 Tf
+50 428 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 414 Td
+(Commercial fleet operators waste up to 35% of fuel costs due to suboptimal) Tj
+0 0 0 rg
+/F1 11 Tf
+50 400 Td
+(routing, idle time, and poor load balancing. Existing solutions are rule-based) Tj
+0 0 0 rg
+/F1 11 Tf
+50 386 Td
+(and cannot adapt to real-time traffic, weather, or demand signals.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 372 Td
+( ) Tj
+0.2 0.2 0.5 rg
+50 358 Td
+/F1 12 Tf
+50 358 Td
+(--- SOLUTION ---) Tj
+0 0 0 rg
+/F1 11 Tf
+50 344 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 330 Td
+(GreenFleet AI's platform continuously re-optimizes routes using machine) Tj
+0 0 0 rg
+/F1 11 Tf
+50 316 Td
+(learning, delivering measurable fuel savings and emissions reductions. Our) Tj
+0 0 0 rg
+/F1 11 Tf
+50 302 Td
+(models are trained on 50M+ historical trip records from Canadian and US fleets.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 288 Td
+( ) Tj
+0.2 0.2 0.5 rg
+50 274 Td
+/F1 12 Tf
+50 274 Td
+(--- BUSINESS MODEL ---) Tj
+0 0 0 rg
+/F1 11 Tf
+50 260 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 246 Td
+(Revenue Model: Subscription \(per-vehicle seat license\) plus usage fees for) Tj
+0 0 0 rg
+/F1 11 Tf
+50 232 Td
+(on-demand route recalculation API calls.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 218 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 204 Td
+(Pricing: CAD $120/vehicle/month for core plan; enterprise pricing for 200+) Tj
+0 0 0 rg
+/F1 11 Tf
+50 190 Td
+(vehicle fleets.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 176 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 162 Td
+(Current Revenue: Pre-revenue \(pilot stage\). Annual Recurring Revenue: $0.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 148 Td
+(We expect to exit pilot phase and begin billing in Q3 2026.) Tj
+0 0 0 rg
+/F1 11 Tf
+50 134 Td
+( ) Tj
+0.2 0.2 0.5 rg
+50 120 Td
+/F1 12 Tf
+50 120 Td
+(--- TRACTION ---) Tj
+0 0 0 rg
+/F1 11 Tf
+50 106 Td
+( ) Tj
+0 0 0 rg
+/F1 11 Tf
+50 92 Td
+(- Signed pilots with 3 regional fleet operators \(total 480 vehicles under) Tj
+0 0 0 rg
+/F1 11 Tf
+50 78 Td
+(  management across Ontario, Alberta, and British Columbia\).) Tj
+0 0 0 rg
+/F1 11 Tf
+50 64 Td
+(- Demonstrated 30% average fuel savings versus operator baselines in) Tj
+0 0 0 rg
+/F1 11 Tf
+50 50 Td
+(  controlled 90-day trials.) Tj
 ET
 endstream
 endobj
 5 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+<< /Type /Font /Subtype /Type1
+   /BaseFont /Helvetica
+   /Encoding /WinAnsiEncoding >>
 endobj
 xref
 0 6
 0000000000 65535 f 
-0000000010 00000 n 
+0000000009 00000 n 
 0000000058 00000 n 
-0000000119 00000 n 
-0000000571 00000 n 
-0000000768 00000 n 
+0000000115 00000 n 
+0000000250 00000 n 
+0000004042 00000 n 
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-846
+4145
 %%EOF
